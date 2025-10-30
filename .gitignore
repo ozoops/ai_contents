@@ -1,0 +1,16 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Temporary files
+temp_images/
+temp_videos/
+.DS_Store
+app_restored.py
+find_images.py
+line_nums.py
+show_insert.py
+show_line.py
+show_ui.py
+adjust_textarea.py
