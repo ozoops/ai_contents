@@ -533,6 +533,7 @@ st.markdown(
 
 with st.sidebar:
     st.title("✨🎨 AI 비주얼 제작실")
+
     page_choice = st.radio("작업 모드", options=["이미지 생성", "영상 생성"], index=0)
 
 if page_choice == "이미지 생성":
