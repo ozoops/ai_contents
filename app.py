@@ -23,10 +23,34 @@ from openai.types.video import Video
 # -------------------------------------------------------------------
 # OpenAI 클라이언트 초기화
 # -------------------------------------------------------------------
+# -------------------------------------------------------------------
+# 페이지 설정 (가장 먼저 호출되어야 함)
+# -------------------------------------------------------------------
 try:
-    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-    client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
-except Exception as exc:  # pragma: no cover
+    st.set_page_config(page_title="AI 비주얼 생성 스튜디오", layout="wide")
+except Exception:
+    pass
+
+# -------------------------------------------------------------------
+# OpenAI 클라이언트 초기화
+# -------------------------------------------------------------------
+if "openai_api_key" not in st.session_state:
+    st.session_state.openai_api_key = os.environ.get("OPENAI_API_KEY", "")
+
+if not st.session_state.openai_api_key:
+    with st.sidebar:
+        st.session_state.openai_api_key = st.text_input(
+            "OpenAI API Key",
+            type="password",
+            help="환경 변수에 키가 설정되지 않았습니다. API 키를 직접 입력하세요."
+        )
+
+try:
+    if st.session_state.openai_api_key:
+        client = OpenAI(api_key=st.session_state.openai_api_key)
+    else:
+        client = None
+except Exception as exc:
     st.error(f"OpenAI 클라이언트를 초기화하는 중 오류가 발생했습니다: {exc}")
     client = None
 
@@ -83,7 +107,7 @@ BACKGROUND_IMAGE_URL = (
 def ensure_client(feature: str) -> OpenAI:
     """해당 기능을 호출하기 전에 클라이언트가 준비되어 있는지 확인."""
     if client is None:
-        raise RuntimeError(f"{feature} 기능을 사용하려면 OPENAI_API_KEY 환경 변수가 필요합니다.")
+        raise RuntimeError(f"{feature} 기능을 사용하려면 사이드바에서 OpenAI API Key를 입력하거나 환경 변수를 설정해야 합니다.")
     return client
 
 
@@ -476,7 +500,7 @@ def render_video_page() -> None:
 # -------------------------------------------------------------------
 # 페이지 구성 및 스타일
 # -------------------------------------------------------------------
-st.set_page_config(page_title="AI 비주얼 생성 스튜디오", layout="wide")
+# st.set_page_config moved to top
 
 st.markdown(
     f"""
